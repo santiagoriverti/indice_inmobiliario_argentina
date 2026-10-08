@@ -1,0 +1,12 @@
+pandas>=2.0.0
+numpy>=1.24.0
+requests>=2.28.0
+matplotlib>=3.7.0
+openpyxl>=3.1.0
+# Lectura de los PDFs de Zonaprop (solo scripts/actualizar_zonaprop.py)
+pypdf>=4.0.0
+pymupdf>=1.24.0
+# Tests y ejecucion local de notebooks
+pytest>=7.0
+nbconvert>=7.0.0
+ipykernel>=6.0.0
