@@ -61,7 +61,7 @@ def pct_salario(tabla: pd.DataFrame, salario: str = 'mediana') -> plt.Figure:
             _etiqueta_final(ax, _x(de), ye[ye.notna()], f'{ye.dropna().iloc[-1]:.0f}%', c)
     nombre = 'salario mediano' if salario == 'mediana' else 'RIPTE'
     _estilo(ax, f'Alquiler de un 2 ambientes como % del {nombre}',
-            'Alquiler medio publicado de un 2 ambientes de 50 m2 (Zonaprop); salario bruto sin aguinaldo',
+            'Alquiler medio publicado de un 2 ambientes de 50 m² (Zonaprop); salario bruto sin aguinaldo',
             '% del salario')
     ax.set_ylim(bottom=0)
     _ubicar_etiquetas(ax)
@@ -78,16 +78,16 @@ def salarios_m2(tabla: pd.DataFrame, salario: str = 'mediana') -> plt.Figure:
         if d.empty:
             continue
         x, c = _x(d), COLORES[reg]
-        ax.plot(x, d[col], color=c, lw=2, label=f'{NOMBRES[reg]} (dolar MEP)')
-        _etiqueta_final(ax, x, d[col], f'{d[col].iloc[-1]:.1f}', c)
+        ax.plot(x, d[col], color=c, lw=2, label=f'{NOMBRES[reg]} (dólar MEP)')
+        _etiqueta_final(ax, x, d[col], f'{d[col].iloc[-1]:.1f}'.replace('.', ','), c)
         if reg == 'CABA':
             col_o = f'salarios_por_m2_{salario}_oficial'
             do = d.dropna(subset=[col_o])
-            ax.plot(_x(do), do[col_o], color=c, lw=1.2, ls=':', label='CABA (dolar oficial)')
+            ax.plot(_x(do), do[col_o], color=c, lw=1.2, ls=':', label='CABA (dólar oficial)')
     nombre = 'salarios medianos' if salario == 'mediana' else 'salarios RIPTE'
-    _estilo(ax, f'Cuantos {nombre} cuesta un m2',
-            'Precio medio publicado de departamentos (USD/m2, Zonaprop) pasado a pesos; salario bruto sin aguinaldo',
-            f'{nombre} por m2')
+    _estilo(ax, f'Cuántos {nombre} cuesta un m²',
+            'Precio medio publicado de departamentos (USD/m², Zonaprop) pasado a pesos; salario bruto sin aguinaldo',
+            f'{nombre} por m²')
     ax.set_ylim(bottom=0)
     _ubicar_etiquetas(ax)
     ax.legend(frameon=False, fontsize=8, loc='upper left', ncol=2)

@@ -24,20 +24,29 @@ Dos indicadores mensuales por región (CABA, GBA Norte, GBA Oeste, GBA Sur):
    IPCBA **no publica la apertura de expensas por API** (datos.gob.ar solo tiene sus divisiones). Se
    usa en su lugar el IPC **GBA** de INDEC, apertura "Reparaciones y gastos comunes de la vivienda"
    (`104.1_I2C_2016_M_42`, desde abr-2016), que cubre CABA + conurbano. Ancla en
-   `data/reference/expensas_ancla.csv`.
+   `data/reference/expensas_ancla.csv`. Solo hay ancla para CABA: el GBA va sin expensas.
+5. **Zonaprop es una prueba piloto** (2026-10-08): la versión definitiva del índice usará datos de
+   un **relevamiento propio de INECO** (convenios con portales inmobiliarios o *web scraping*). La
+   sección del informe INECO (`docs/informe_indicadores/seccion_inmobiliario.tex`) describe esa
+   metodología de forma genérica y presenta las cifras de Zonaprop como "resultados preliminares".
+   Ver §5.
 
 ## 3. Fuentes
 
 | Dato | Fuente | Desde | Notas |
 |---|---|---|---|
-| Alquiler 2 amb 50 m² ($/mes) | Zonaprop Index (PDF mensual) | CABA ~2015 | precio publicado (oferta), contratos nuevos, **sin expensas** |
-| Venta departamentos (USD/m²) | Zonaprop Index | CABA 2011 | precio publicado, no de escritura |
+| Alquiler 2 amb 50 m² ($/mes) | Zonaprop Index (PDF mensual) | CABA oct-2017 · GBA Oeste dic-2020 · GBA Norte feb-2023 · GBA Sur dic-2025 | precio publicado (oferta), contratos nuevos, **sin expensas** |
+| Venta departamentos (USD/m²) | Zonaprop Index | CABA mar-2018 · GBA Oeste ago-2020 · GBA Norte dic-2020 · GBA Sur may-2025 | precio publicado, no de escritura |
 | Salario mediano / promedio SIPA | datos.gob.ar `153.1_RNERACIANA_2009_M_20` / `153.1_RNERACIDIO_2009_M_21` | 1995 | **incluye SAC en jun/dic**; ~2 meses de rezago |
 | RIPTE | datos.gob.ar `158.1_REPTE_0_0_5` | 1994 | sin SAC; ~1 mes de rezago |
 | Índice de expensas | IPC GBA INDEC `104.1_I2C_2016_M_42` | abr-2016 | sube fuerte en jun/dic (aguinaldo de encargados) |
 | Guía para interpolar alquiler | IPC nacional nivel general `148.3_INIVELNAL_DICI_M_26` | dic-2016 | ver trampas: el IPC "Alquiler de la vivienda" no sirve de guía |
 | Dólar MEP | argentinadatos `/cotizaciones/dolares/bolsa` | oct-2018 | antes: CCL (`contadoconliqui`, 2013+) × factor MEP/CCL de los 6 primeros meses comunes (≈1,0016) |
 | Dólar oficial | BCRA API v4, variable 5 (A3500) | 2010 | `verify=False` (el certificado del BCRA no valida) |
+
+"Desde" = primer mes con dato en `data/processed/zonaprop_series.csv` (incluye meses derivados).
+Zonaprop publica la venta de CABA desde dic-2011 y el alquiler desde ~2012, pero los PDFs anteriores
+a sep-2017 no están en el Internet Archive.
 
 ### Zonaprop: cómo se arma la serie
 
@@ -75,10 +84,12 @@ Dos indicadores mensuales por región (CABA, GBA Norte, GBA Oeste, GBA Sur):
   mediana de jun-2026 es 50% más alta que la de mayo). `indice.sin_aguinaldo` reemplaza esos meses
   por la media geométrica de los vecinos (o, si falta el mes siguiente, mes anterior × variación del
   RIPTE). Dividir por 1,5 subestima (no todos cobran SAC completo).
-- **Zonaprop mide precios de oferta**, no de cierre (en venta, el descuento al escriturar fue del
-  orden de 5-10%). El alquiler es de **contratos nuevos**: durante la ley 27.551 (2020-2023) subió
-  mucho más rápido que los contratos vigentes; tras su derogación (DNU 70/2023, dic-2023) la oferta
-  creció y los precios se desaceleraron.
+- **Zonaprop mide precios de oferta**, no de cierre. El precio de escritura no se observa; como
+  indicio, el informe de ago-2026 dice que el 26% de los avisos de venta se retasó a la baja en los
+  últimos 6 meses, con un descuento promedio de 5,9%. El alquiler es de **contratos nuevos**: durante
+  la ley 27.551 (2020-2023) subió mucho más rápido que los contratos vigentes; tras su derogación
+  (DNU 70/2023, dic-2023) la oferta creció (ago-2026: 3,4 veces la de feb-2023, según Zonaprop) y los
+  precios se desaceleraron.
 - **Wayback**: hay capturas truncadas a 1 MiB (`x-archive-orig-content-length: 1048576`, sin
   `%%EOF`); se prueban otras capturas de la misma URL y, si ninguna está completa, se guarda la
   truncada como `.parcial.pdf`. Ni pypdf ni el texto común de PyMuPDF sirven ahí: faltan las fuentes
@@ -96,3 +107,49 @@ Dos indicadores mensuales por región (CABA, GBA Norte, GBA Oeste, GBA Sur):
 - El ancla de expensas es una **mediana de avisos de alquiler** (unidades que se alquilan), no el
   promedio de todos los consorcios (ConsorcioAbierto da ~$355.000 en jul-2026 para todas las
   unidades, de todos los tamaños).
+- **Mes en curso**: el dólar del último mes es un promedio parcial (cambia día a día). Por eso un ZIP
+  de Colab corrido otro día difiere en esa fila de `tipo_de_cambio.csv`; el índice no la usa (llega
+  hasta el último mes con salario).
+- `src/graficos.py` **no debe forzar** `matplotlib.use('Agg')`: en un notebook apaga los gráficos.
+  El backend sin pantalla se fija solo en `scripts/construir.py`.
+
+## 5. Hacia la versión definitiva: relevamiento propio de INECO
+
+Lo que describe la sección del informe (`docs/informe_indicadores/seccion_inmobiliario.tex`) y
+todavía **no está implementado**:
+
+- **Fuente**: avisos de portales inmobiliarios, por convenio o *web scraping*. Solo con convenio o
+  respetando los términos de uso y el `robots.txt` del sitio; **nunca saltear protecciones
+  anti-bot** (Cloudflare, captchas).
+- **Variables por aviso**: operación (venta/alquiler), tipo de inmueble, barrio o partido, superficie
+  cubierta, ambientes, antigüedad, precio y moneda, expensas, fechas de alta y baja.
+- **Limpieza**: duplicados (misma unidad en varias inmobiliarias o portales), avisos sin precio o
+  superficie, atípicos de precio por m² dentro de cada zona.
+- **Unidad de referencia**: departamento de 2 ambientes y 50 m² cubiertos (la misma del piloto).
+  Expensas = mediana del $/m² informado en los avisos × 50 m², en cada región (reemplaza el ancla × IPC).
+- **Ajuste por composición**: medianas dentro de estratos (zona × ambientes × antigüedad) agregadas
+  con ponderaciones fijas del stock de avisos de un año base.
+- **Oferta vs. cierre**: seguir la brecha con el monto de escrituras del Colegio de Escribanos.
+- **Encastre en el código**: la nueva fuente tiene que producir la misma tabla larga que
+  `zonaprop.series()` (`periodo`, `region`, `alquiler_2amb`, `venta_usd_m2`, `tipo_*`) y una tabla
+  de expensas por región como la de `indice.expensas()`. Así `indice.calcular`, la exportación, los
+  gráficos y el notebook no cambian. Zonaprop puede quedar como validación cruzada.
+
+## 6. Mapa del código
+
+| Archivo | Qué hace |
+|---|---|
+| `src/fuentes.py` | rutas del repo; descarga con cache de datos.gob.ar (salarios, IPC), argentinadatos (MEP, CCL) y BCRA (A3500) |
+| `src/zonaprop.py` | catálogo de PDFs (Wayback + sitio), descarga, extracción por regex, `chequeos`, `_empalmar`, `series` (niveles mensuales + huecos) |
+| `src/indice.py` | `sin_aguinaldo`, `salarios`, `expensas`, `calcular` (tabla larga con todos los indicadores) |
+| `src/pipeline.py` | `construir()`: arma el diccionario `R` que usan construir.py y el notebook |
+| `src/exportar.py` | CSV, Excel (7 hojas), gráficos PNG y ZIP del notebook; `ultimo_dato` |
+| `src/graficos.py` | 4 gráficos (alquiler % salario y salarios por m², con mediana y con RIPTE) |
+| `scripts/actualizar_zonaprop.py` | descubre/baja/extrae los PDFs → `data/reference/zonaprop_{catalogo,valores}.csv` |
+| `scripts/construir.py` | arma todo → `data/processed/*.csv`, `output/indice_inmobiliario.xlsx`, `output/graficos/` |
+| `scripts/gen_notebooks.py` | genera `notebooks/01_indice_inmobiliario.ipynb` |
+| `scripts/comparar_zip.py` | compara un ZIP de Colab con `data/processed/` |
+| `tests/` | extracción de PDFs, URLs, empalme, interpolación, SAC, expensas, ratios |
+
+Flujo: `actualizar_zonaprop.py` (PDF → `zonaprop_valores.csv`, versionado) → `construir.py` /
+notebook (`zonaprop_valores.csv` + APIs → índice). Los notebooks nunca leen PDFs.

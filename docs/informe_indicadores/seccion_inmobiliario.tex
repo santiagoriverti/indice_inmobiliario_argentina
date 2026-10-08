@@ -1,0 +1,82 @@
+\section{Índice Inmobiliario en Argentina}
+
+El Índice Inmobiliario mide la dificultad de acceder a la vivienda en relación con los ingresos del trabajo. INECO ya releva el costo del metro cuadrado de los departamentos en venta; la propuesta es completarlo con el costo de alquilar y expresar ambos en salarios, para que reflejen el esfuerzo que hace un hogar asalariado y no solo la evolución de los precios. El índice tiene dos indicadores mensuales: el \emph{esfuerzo de alquiler}, que es el alquiler de un departamento tipo más sus expensas como porcentaje del salario, y el \emph{costo de compra}, que es la cantidad de salarios necesarios para pagar un metro cuadrado. La primera etapa cubre la Ciudad de Buenos Aires (CABA) y los tres cordones del Gran Buenos Aires (GBA Norte, Oeste y Sur), y puede extenderse a los principales aglomerados del país a medida que crezca el relevamiento.
+
+\subsection{Metodología}
+
+Los precios de las propiedades provienen de un relevamiento propio de INECO sobre los avisos publicados en portales inmobiliarios, obtenidos mediante convenios con los sitios o por extracción automática de sus páginas (\emph{web scraping}). De cada aviso se registran el tipo de operación (venta o alquiler), el tipo de inmueble, la ubicación (barrio o partido), la superficie cubierta, la cantidad de ambientes, la antigüedad, el precio y su moneda, las expensas y las fechas de alta y de baja de la publicación. Antes del cálculo se eliminan los avisos duplicados ---una misma unidad publicada por varias inmobiliarias o en varios portales---, los que no informan precio o superficie y los valores atípicos de precio por metro cuadrado dentro de cada zona.
+
+Para comparar siempre el mismo tipo de vivienda, se toma como referencia un departamento de 2 ambientes y 50~m$^2$ cubiertos. El precio de venta se resume en dólares por metro cuadrado y el alquiler en pesos por mes; las expensas surgen de la mediana del valor por metro cuadrado que informan los avisos, aplicada a la unidad de referencia. Como la composición de la oferta cambia de un mes a otro (más o menos avisos en barrios caros, unidades nuevas o usadas), los precios se calculan como medianas dentro de estratos de zona, cantidad de ambientes y antigüedad, y se agregan con ponderaciones fijas del stock de avisos de un año base. Así, una variación del índice refleja cambios de precio y no cambios en la mezcla de propiedades publicadas.
+
+El denominador es la mediana de la remuneración bruta de los asalariados registrados del sector privado del SIPA \cite{sipa_remuneraciones}, sin el medio aguinaldo de junio y diciembre. Como alternativa se usa el RIPTE \cite{ripte}, que es un promedio y por lo tanto supera a la mediana. El precio en dólares se convierte a pesos con el dólar MEP, el tipo de cambio relevante para las operaciones inmobiliarias; el oficial (Comunicación A~3500 del BCRA \cite{bcra_a3500}) se informa como sensibilidad. Para la región $r$ y el mes $t$:
+\begin{equation*}
+\text{Esfuerzo de alquiler}_{r,t} = 100\,\frac{A_{r,t}+E_{r,t}}{W_t}, \qquad
+\text{Salarios por m}^2_{r,t} = \frac{P_{r,t}\,TC_t}{W_t},
+\end{equation*}
+donde $A$ es el alquiler mensual de la unidad de referencia, $E$ sus expensas, $W$ el salario mediano, $P$ el precio de venta en dólares por metro cuadrado y $TC$ el dólar MEP. Al multiplicar el segundo indicador por 50 y dividirlo por los 13 sueldos de un año se obtienen los \emph{años de salario} necesarios para comprar la unidad de referencia, una medida comparable con la relación precio-ingreso que se usa internacionalmente. Como referencia, suele considerarse que un hogar está sobrecargado cuando destina a la vivienda más del 30\% de sus ingresos.
+
+Cabe hacer dos aclaraciones. Los avisos muestran precios de oferta, que en la venta suelen superar a los de cierre; la brecha puede seguirse con el monto de las escrituras que informa el Colegio de Escribanos \cite{escribanos}. Y el alquiler de los avisos corresponde a contratos nuevos, que no es lo que pagan los inquilinos con contratos vigentes: eso lo mide el IPC \cite{indec_ipc}.
+
+\subsection{Resultados preliminares}
+
+Hasta que el relevamiento propio esté en funcionamiento, el índice se calculó como prueba piloto con los informes mensuales del Zonaprop Index \cite{zonaprop}, que publican el alquiler medio de un 2 ambientes de 50~m$^2$ y el precio medio de venta de los departamentos en dólares por metro cuadrado para la CABA y el GBA. La serie de la CABA comienza a fines de 2017. Como no todos los informes están disponibles, más de la mitad de los meses (el 58\% en el alquiler de la CABA) se completó con las variaciones publicadas en los informes vecinos o por interpolación. Las expensas, solo para la CABA, parten de un relevamiento privado de avisos de junio de 2026 (mediana de \$171.545 para un 2 ambientes \cite{iprofesional_expensas}) y se actualizan con el índice de reparaciones y gastos comunes de la vivienda del IPC del INDEC para el Gran Buenos Aires \cite{indec_ipc}.
+
+\begin{table}[!htb]
+\centering
+\small
+\caption{Esfuerzo de alquiler y costo de compra por región, junio de 2026}
+\vspace{.25 cm}
+\label{tab:inmo_regiones}
+\begin{tabular}{@{}l r r r r r@{}}
+\toprule
+Región & Alquiler 2 amb. & \multicolumn{2}{c}{\% del salario mediano} & Salarios & Años de salario \\
+\cmidrule(lr){3-4}
+ & (\$ por mes) & Alquiler & Con expensas & por m$^2$ & (50 m$^2$) \\
+\midrule
+CABA      & 860.106 & 51,6 & 61,9 & 2,18 & 8,4 \\
+GBA Norte & 800.743 & 48,1 & ---  & 2,13 & 8,2 \\
+GBA Oeste & 632.324 & 38,0 & ---  & 1,39 & 5,4 \\
+GBA Sur   & 621.578 & 37,3 & ---  & 1,47 & 5,7 \\
+\bottomrule
+\end{tabular}
+
+\smallskip
+\parbox{13.5cm}{\footnotesize Salario mediano bruto sin aguinaldo: \$1.666.213. Precio del m$^2$ convertido al dólar MEP. Fuente: INECO--UADE en base a Zonaprop Index, SIPA, BCRA e INDEC.}
+\end{table}
+
+En junio de 2026 el alquiler de un 2 ambientes en la CABA equivalió al 51,6\% del salario mediano y, con las expensas, al 61,9\% (Cuadro~\ref{tab:inmo_regiones}): las expensas suman cerca de un 20\% al alquiler. En el GBA Norte el alquiler representa una proporción similar (48,1\%) y en el Oeste y el Sur ronda el 37--38\%. Medido con el RIPTE, el alquiler de la CABA equivale al 44,9\% del salario (53,8\% con expensas). En todas las regiones supera el umbral del 30\%, aun sin contar las expensas.
+
+En la CABA, el alquiler absorbía entre el 46 y el 47\% del salario mediano en 2018--2019, subió al 63,8\% en el promedio de 2023 y alcanzó un máximo del 74,0\% en enero de 2024 (79,9\% con expensas), en plena aceleración inflacionaria y apenas derogada la Ley 27.551 por el DNU 70/2023 (Figura~\ref{fig:inmo_alquiler}). Desde entonces creció la oferta ---según el portal, en agosto de 2026 los departamentos en alquiler en la CABA eran unas 3,4 veces los de febrero de 2023--- y los alquileres de contratos nuevos subieron menos que los salarios: el alquiler bajó a alrededor del 51\% del salario mediano en el promedio de 2025 (60\% con expensas) y se mantiene en torno al 52\% en 2026 (62\% con expensas).
+
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=\textwidth]{figuras/G01_alquiler_pct_salario_mediano.png}
+\caption{Alquiler de un 2 ambientes de 50~m$^2$ como porcentaje del salario mediano, por región, octubre de 2017 a junio de 2026. Línea discontinua: alquiler más expensas (CABA).}
+\label{fig:inmo_alquiler}
+\end{figure}
+
+El costo de compra muestra una mejora más marcada (Figura~\ref{fig:inmo_m2}). Un metro cuadrado en la CABA costaba 2,18 salarios medianos en junio de 2026 (USD 2.467 por m$^2$), el valor más bajo de la serie y similar al de comienzos de 2018 (2,27 en marzo), antes de la crisis cambiaria. El máximo se registró en octubre de 2020, con 7,16 salarios, cuando la brecha cambiaria llevó al dólar MEP muy por encima del oficial. En términos de la unidad de referencia, comprar un 2 ambientes de 50~m$^2$ requiere hoy 8,4 años de salario en la CABA, frente a 18,4 a fines de 2023 y 27,5 en octubre de 2020; en el GBA Oeste y Sur, entre 5,4 y 5,7 años. La mejora se explica sobre todo por la suba del salario medido en dólares: entre noviembre de 2023 y junio de 2026 el salario mediano pasó de unos USD 450 a unos USD 1.130 al dólar MEP (2,5 veces), mientras que el precio del metro cuadrado en la CABA subió un 14\%. La elección del tipo de cambio importa en los períodos de cepo: en 2020 un metro cuadrado costaba en promedio 6,2 salarios al dólar MEP y 3,9 al oficial, mientras que hoy ambas medidas casi coinciden (2,18 y 2,15).
+
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=\textwidth]{figuras/G03_salarios_por_m2_mediano.png}
+\caption{Salarios medianos necesarios para comprar un m$^2$ de departamento, por región, marzo de 2018 a junio de 2026 (dólar MEP; línea de puntos: CABA al dólar oficial).}
+\label{fig:inmo_m2}
+\end{figure}
+
+El relevamiento propio permitirá reemplazar la prueba piloto por datos observados: expensas medidas en cada región, índices por barrio y partido, la brecha entre precios de oferta y de cierre y la extensión a otros aglomerados del país.
+
+% ---------------------------------------------------------------------------------------------
+% Agregar a \begin{thebibliography}:
+%
+% \bibitem{sipa_remuneraciones} Secretaría de Trabajo, Empleo y Seguridad Social (2026). \textit{Remuneración bruta de los asalariados registrados del sector privado (SIPA): mediana y promedio, serie mensual}. Portal de datos abiertos datos.gob.ar.
+%
+% \bibitem{ripte} Secretaría de Seguridad Social (2026). \textit{Remuneración Imponible Promedio de los Trabajadores Estables (RIPTE), serie mensual}. Portal de datos abiertos datos.gob.ar.
+%
+% \bibitem{bcra_a3500} Banco Central de la República Argentina (2026). \textit{Tipo de cambio de referencia, Comunicación A 3500}. Buenos Aires: BCRA.
+%
+% \bibitem{escribanos} Colegio de Escribanos de la Ciudad de Buenos Aires (2026). \textit{Relevamiento mensual de escrituras}. Buenos Aires.
+%
+% \bibitem{zonaprop} Zonaprop (2017--2026). \textit{Index: Informe del mercado inmobiliario} (Ciudad de Buenos Aires, GBA Norte, GBA Oeste y GBA Sur). Informes mensuales. Buenos Aires: Zonaprop -- Grupo QuintoAndar.
+%
+% \bibitem{iprofesional_expensas} Ramallo, R. (2026). ``Expensas comunes: cuánto se paga por metro cuadrado según el tipo de inmueble''. \textit{iProfesional}, 1 de septiembre (datos de Propio).
